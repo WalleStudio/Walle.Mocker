@@ -1,0 +1,92 @@
+﻿
+@{
+    ViewBag.Title = "项目审批";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section pagestyle{
+    <link href="~/Content/Themes/css/todo.css" rel="stylesheet" />
+}
+<div id="app">
+
+    <div class="portlet light col-md-12">
+        <div class="portlet-title">
+            <div class="caption caption-md">
+                <span class="caption-subject font-green-sharp bold">项目审核</span>
+            </div>
+            <div class="actions">
+                <a href="javascript:;">
+                    <i class="fa fa-plus"></i> 新建项目
+                </a>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <el-tabs v-model="activeName" type="card">
+                        <el-tab-pane label="待审核" name="AuditProject">
+                            <div class="todo-tasklist">
+                                <div class="todo-tasklist-item todo-tasklist-item-border-green" v-for="(project,index) in projects">
+                                    <div class="todo-tasklist-item-title">
+                                        {{project.Name}}
+                                        <el-dialog title="审核确认"  v-model="project.AuditDialogVisible" size="tiny">
+                                            <span>【{{project.Owner}}】,申请创建【{{project.Name}}】项目!</span>
+                                            <span slot="footer" class="dialog-footer">
+                                                <el-button v-on:click="dialogClick(index,false,project.Id)">驳 回</el-button>
+                                                <el-button type="primary" v-on:click="dialogClick(index,true,project.Id)">通 过</el-button>
+                                            </span>
+                                        </el-dialog>
+                                        <span class="pull-right"><el-button type="success" size="mini" v-on:click="dialogClick(index,true)">审核</el-button></span> 
+                                    </div>
+                                    <div class="todo-tasklist-item-text">
+                                        {{project.Description}}
+                                    </div>
+                                    <div class="todo-tasklist-controls pull-left">
+                                        <el-tag type="gray"><i class="el-icon-date"></i>创建日期:{{project.CreateTimeStr}}</el-tag>
+                                        <el-tag type="primary"><i class="fa fa-user"></i>拥有人:{{project.Owner}}</el-tag>
+                                    </div>
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
+            </div>
+        </div>
+
+        <div class="portlet-body">
+            <div v-if="pagination.total===0">
+                <div style="float:right">
+                    暂无数据!
+                </div>
+            </div>
+            <div v-else>
+                <div style="float:right">
+                    <el-pagination v-model="pagination"
+                                   v-on:current-change="handleCurrentChange"
+                                   v-on:size-change="handleSizeChange"
+                                   :current-page="pagination.currentPage"
+                                   :page-size="pagination.pageSize"
+                                   :page-sizes="[5, 10, 15, 20]"
+                                   layout="total, sizes, prev, pager, next, jumper"
+                                   :total="pagination.total">
+                    </el-pagination>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="urls" data-auditproject="@Url.Action("PaginationQuery","Api",new {Area="Projects" })"
+     data-audit="@Url.Action("Audit", "Api", new { Area = "Projects" })" >
+</div>
+
+@section  scripts{
+    <script src="~/Scripts/Admin/auditProject.js"></script>
+    <script>
+        jQuery(document).ready(function () {
+            auditProject.init();
+        });
+    </script>
+}
+

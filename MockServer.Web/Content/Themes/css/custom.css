@@ -1,0 +1,19 @@
+
+.el-select .el-input {
+    width: 300px;
+}
+
+.el-input-group {
+    margin-top: 5px;
+}
+
+.el-button--success {
+    color: #fff;
+    background-color: #45b6af;
+    border-color: #45b6af;
+}
+
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}

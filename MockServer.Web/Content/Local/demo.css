@@ -1,0 +1,9 @@
+﻿div.checker, div.checker span, div.checker input {
+    width: 0px;
+    height: 19px;
+}
+.el-select>.el-input {
+    display: block;
+    width:100%;
+}
+

@@ -1,0 +1,150 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="zh-cn">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8" />
+    <title>Mock平台 - @ViewBag.Title</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta content="国内机票Mock平台" name="description" />
+    <meta content="国内机票研发-徐凤辉" name="author" />
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/element")
+    <link href="http://cdn.bootcss.com/element-ui/1.2.5/theme-default/index.css" rel="stylesheet" />
+    @RenderSection("pagestyle", false)
+    <link rel="shortcut icon" href="~/favicon.ico" />
+
+
+</head>
+
+<body>
+ 
+    <div class="page-header">
+        <div class="page-header-top">
+            <div class="container">
+                <div class="page-logo">
+                    <span class="" style="font-size:45px;color:#4db3a2;margin-top:10px">Mocker</span>
+                </div>
+                <a href="javascript:;" class="menu-toggler"></a>
+                <div class="top-menu">
+                    <ul class="nav navbar-nav pull-right">
+                        <li class="dropdown dropdown-user dropdown-dark" id="user" data-url="@Url.Action("CurrentUser","Home",new { Area=""})">
+                            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                                <img alt="" class="img-circle" src="~/Content/Themes/img/avatar.png">
+                                <span class="username username-hide-mobile">{{user.Department}}-{{user.UserName}}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-default">
+                                <li>
+                                    <a href="#">
+                                        <i class="icon-user"></i> 个人中心
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("LogOut","OAuth",new { Area = ""})">
+                                        <i class="icon-key"></i> 登出SSO
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="page-header-menu">
+            <div class="container">
+                <form class="search-form" action="#" method="GET">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="query">
+                        <span class="input-group-btn">
+                            <a href="javascript:;" class="btn submit"><i class="icon-magnifier"></i></a>
+                        </span>
+                    </div>
+                </form>
+                <div class="hor-menu" id="menu" data-url="@Url.Action("Menu","Home",new { Area=""})">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="~/">  首页</a>
+                        </li>
+                        <li class="menu-dropdown mega-menu-dropdown mega-menu-full" v-for="module in Menus">
+                            <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">
+                                {{module.Title}} <i class="fa fa-angle-down"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <div class="mega-menu-content">
+                                        <div class="row">
+                                            <div class="col-md-3" v-for="group in module.Groups">
+                                                <ul class="mega-menu-submenu">
+                                                    <li>
+                                                        <h3>{{group.Title}}</h3>
+                                                    </li>
+                                                    <li v-for="link in group.Links">
+                                                        <a v-bind:href="link.Href">
+                                                            <i class="fa fa-angle-right"></i>{{link.Name}}
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-container">
+        <div class="page-content">
+            <div class="container">
+                <ul class="page-breadcrumb breadcrumb">
+                    <li>
+                        <a href="#">首页</a><i class="fa fa-circle"></i>
+                    </li>
+
+                    <li class="active">
+                        Mock 服务平台
+                    </li>
+                </ul>
+                <div class="row">
+                    <div class="col-md-12">
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="container">
+            <div class="right">
+                @DateTime.Now.Year &copy; 机票事业群-国内机票研发-公共开发组  Power By <a href="#" title="" target="_blank"><i class="fa fa-windows"></i> Microsoft Asp.Net Core </a>
+            </div>
+        </div>
+    </div>
+    <div class="scroll-to-top">
+        <i class="icon-arrow-up"></i>
+    </div>
+    <!--[if lt IE 9]>
+    <script src="~/Content/Scripts/respond.min.js"></script>
+    <script src="~/Content/Scripts/excanvas.min.js"></script>
+    <![endif]-->
+    @Scripts.Render("~/bundles/jq")
+    @Scripts.Render("~/bundles/js")
+    @RenderSection("plugins", required: false);
+    @Scripts.Render("~/bundles/vue")
+    @Scripts.Render("~/bundles/jin")
+    @Scripts.Render("~/bundles/element")
+    <script src="http://cdn.bootcss.com/element-ui/1.2.5/index.js"></script>
+    @RenderSection("scripts", required: false)
+ 
+</body>
+</html>

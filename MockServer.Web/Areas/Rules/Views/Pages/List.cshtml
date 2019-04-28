@@ -1,0 +1,135 @@
+﻿@{
+    ViewBag.Title = "规则列表";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section pagestyle{
+    <link href="~/Content/Themes/css/todo.css" rel="stylesheet" />
+}
+
+<div id="app" data-projectid="@ViewBag.Id">
+    <div class="portlet light" style="width:30%;float:left">
+        <div class="portlet-title">
+            <div class="caption caption-md">
+                <span class="caption-subject theme-font bold">项目详情</span>
+            </div>
+            <div class="actions">
+                <el-button @@click="pageConfig.showProjectSettingDialog=true" type="text"><i class="fa fa-cogs"></i><span class="hidden-480"> 设置 </span></el-button>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row static-info">
+                        <div class="col-md-4">名称:</div>
+                        <div class="col-md-8"><b v-html="project.Name"></b></div>
+                    </div>
+                    <div class="row static-info">
+                        <div class="col-md-4">管理员:</div>
+                        <div class="col-md-8"><b v-html="project.Owner"></b></div>
+                    </div>
+                    <div class="row static-info">
+                        <div class="col-md-4">项目id:</div>
+                        <div class="col-md-8" v-html="project.Id"></div>
+                    </div>
+                    <div class="row static-info">
+                        <div class="col-md-4">规则总数:</div>
+                        <div class="col-md-8" v-html="pagination.pageTotal"></div>
+                    </div>
+                    <div class="row static-info">
+                        <div class="col-md-4">描述:</div>
+                        <div class="col-md-12" v-html="project.Description"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portlet light" style="width:68%;float:right">
+        <div class="portlet-title">
+            <div class="caption caption-md">
+                <span class="caption-subject theme-font bold">规则列表</span>
+            </div>
+            <div class="actions">
+                <el-button @@click="createRule" type="text"><i class="fa fa-plus"></i><span class="hidden-480"> 创建新规则  </span></el-button>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="scroller" style="height: 650px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                        <div class="todo-tasklist">
+                            <div class="todo-tasklist-item"    
+                                        v-bind:class="{
+                                         'todo-tasklist-item-border-green':item.IsActive ===true,
+                                         'todo-tasklist-item-border-red':item.IsActive ===false
+                                         }"
+                                         v-for="(item,$index) in RuleList">
+                                <div class="todo-tasklist-item-title">
+                                    <span class="label label-success" v-if="item.RequestMethod=='POST'">{{item.RequestMethod}}</span> 
+                                    <span class="label label-info" v-else>{{item.RequestMethod}}</span> {{item.Name}}
+                                </div>
+                                <div class="todo-tasklist-item-text" v-html="item.Desc">
+                                </div>
+                                <div class="todo-tasklist-controls pull-right">
+                                    <el-button size="mini" type="info" @@click="detail(item.Id)"> <i class="fa fa-book"></i> 详情 </el-button>
+                                    <el-button size="mini" type="warning" v-if="item.IsActive" @@click="frozen(item)"> <i class="fa fa-lock"></i> 冻结</el-button>
+                                    <el-button size="mini" type="success" v-else @@click="active(item)"><i class="fa fa-unlock-alt"></i> 激活 </el-button>
+                                    <el-button size="mini" type="danger" @@click="del(item.Id)"><i class="fa fa-trash-o"></i> 删除 </el-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="pull-right" style="margin-top:20px;float:right">
+                    <el-pagination @@size-change="pageSizeChange"
+                                   @@current-change="pageCurrentChange"
+                                   :current-page="pagination.pageIndex"
+                                   :page-sizes="[10, 20, 50, 100]"
+                                   :page-size="pagination.pageSize"
+                                   layout="total, sizes, prev, pager, next, jumper"
+                                   :total="pagination.pageTotal">
+                    </el-pagination>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <el-dialog title="编辑系统" v-model="pageConfig.showProjectSettingDialog" :lock-scroll="false">
+        <el-form :model="project">
+            <el-form-item label="名称:" label-width="formLabelWidth">
+                <el-input v-model="project.Name" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="描述:" label-width="formLabelWidth">
+                <el-input type="textarea" v-model="project.Description" rows="5"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @@click="pageConfig.showProjectSettingDialog = false">取 消</el-button>
+            <el-button type="primary" @@click="projectEdit()">确 定</el-button>
+        </div>
+    </el-dialog>
+
+</div>
+<div id="urls"
+     data-list="@Url.Action("List","Api",new {Area="Rules" })"
+     data-create="@Url.Action("Create","Api",new {Area="Rules" })"
+     data-detail="@Url.Action("Detail","Api", new { Area="Rules"})"
+     data-active="@Url.Action("Active","Api", new { Area="Rules"})"
+     data-frozen="@Url.Action("Frozen","Api", new { Area="Rules"})"
+     data-delete="@Url.Action("Delete","Api", new { Area="Rules"})"
+     data-projedit="@Url.Action("Edit","Api",new {Area="Projects" })"
+     data-projdetail="@Url.Action("Detail","Api",new {Area="Projects" })">
+</div>
+
+
+@section scripts {
+    <script src="~/Scripts/Rule/list.js"></script>
+    <script>
+        jQuery(document).ready(function () {
+            list.init();
+        });
+    </script>
+}
+

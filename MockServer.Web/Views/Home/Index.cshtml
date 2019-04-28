@@ -1,0 +1,36 @@
+﻿ 
+<div id="app">
+    <div class="portlet light col-md-12">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-home font-green-sharp"></i>
+                <span class="caption-subject font-green-sharp bold">模拟系统</span>
+            </div>
+            <div class="tools">
+                <a href="javascript:;" class="collapse" data-original-title="" title="">
+                </a>
+                <a href="#portlet-config" data-toggle="modal" class="config" data-original-title="" title="">
+                </a>
+                <a href="javascript:;" class="reload" data-original-title="" title="">
+                </a>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="row">
+      
+            </div>
+        </div>
+    </div>
+</div>
+
+@section  scripts{
+    <!-- 引入组件库 -->
+    <script src="//cdn.bootcss.com/element-ui/1.2.5/index.js"></script>
+    <script src="~/Scripts/Home/index.js"></script>
+    <script>
+        jQuery(document).ready(function () {
+            index.init();
+        });
+    </script>
+}
+

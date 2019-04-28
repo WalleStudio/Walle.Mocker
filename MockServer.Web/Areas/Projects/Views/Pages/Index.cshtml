@@ -1,0 +1,105 @@
+﻿@{
+    ViewBag.Title = "项目列表";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section pagestyle{
+    <link href="~/Content/Themes/css/todo.css" rel="stylesheet" />
+}
+
+<div id="app" style="min-height:800px">
+    <div class="portlet light col-md-12">
+        <div class="portlet-title">
+            <div class="caption caption-md">
+                <span class="caption-subject font-green-sharp bold">Mock项目</span>
+            </div>
+            <div class="actions">
+                <el-button type="text" @@click="createProject"><i class="el-icon-plus"></i>  创建项目</el-button>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <el-tabs v-model="activeName" type="card" v-on:tab-click="handleClick">
+                        <el-tab-pane label="已加入" name="Joined">
+                            <div class="todo-tasklist">
+                                <div class="todo-tasklist-item todo-tasklist-item-border-green" v-for="project in projects">
+                                    <div class="todo-tasklist-item-title" v-html="project.Name">
+                                       
+                                    </div>
+                                    <div class="todo-tasklist-item-text" v-html="project.Description">
+                                      
+                                    </div>
+                                    <div class="todo-tasklist-controls pull-left">
+                                        <el-tag type="gray"><i class="el-icon-date"></i>创建日期:{{project.CreateTimeStr}}</el-tag>
+                                        <el-tag type="primary"><i class="fa fa-user"></i>拥有人:{{project.Owner}}</el-tag>
+                                        <span @@click="ruleList(project.Id)"><el-tag type="success"><i class="el-icon-setting"></i> 编辑规则</el-tag></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="未加入" name="UnJoined">
+                            <div class="todo-tasklist">
+                                <div class="todo-tasklist-item todo-tasklist-item-border-green" v-for="(project,index) in projects">
+                                    <div class="todo-tasklist-item-title">
+                                        {{project.Name}}
+                                        <el-dialog title="申请确认" v-model="project.ApplyDialogVisible" size="tiny" :lock-scroll="false">
+                                            <span>向项目拥有人【{{project.Owner}}】,申请加入该项目!</span>
+                                            <span slot="footer" class="dialog-footer">
+                                                <el-button v-on:click="dialogClick(index,false)">取 消</el-button>
+                                                <el-button type="primary" v-on:click="dialogClick(index,false,project.Id)">确 定</el-button>
+                                            </span>
+                                        </el-dialog>
+                                        <div v-if="project.IsApply===false"><span class="pull-right"><el-button type="success" size="mini" v-on:click="dialogClick(index,true)">申请加入</el-button></span></div>
+                                        <div v-else><span class="pull-right"><el-button type="primary" size="mini" disabled="true">申请中...</el-button></span></div>
+                                    </div>
+                                    <div class="todo-tasklist-item-text">
+                                        {{project.Description}}
+                                    </div>
+                                    <div class="todo-tasklist-controls pull-left">
+                                        <el-tag type="gray"><i class="el-icon-date"></i> 创建日期:{{project.CreateTimeStr}}</el-tag>
+                                        <el-tag type="primary"><i class="fa fa-user"></i> 拥有人:{{project.Owner}}</el-tag>
+                                    </div>
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
+            </div>
+            <div v-if="pagination.total===0">
+                <div style="float:right">
+                    暂无数据!
+                </div>
+            </div>
+            <div v-else>
+                <div style="float:right;margin-top:20px">
+                    <el-pagination v-model="pagination"
+                                   v-on:current-change="handleCurrentChange"
+                                   v-on:size-change="handleSizeChange"
+                                   :current-page="pagination.currentPage"
+                                   :page-size="pagination.pageSize"
+                                   :page-sizes="[5, 10, 15, 20]"
+                                   layout="total, sizes, prev, pager, next, jumper"
+                                   :total="pagination.total">
+                    </el-pagination>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="urls"
+     data-project="@Url.Action("PaginationQuery","Api",new {Area="Projects" })"
+     data-apply="@Url.Action("ApplyJoin","Api",new {Area="Projects" })"
+     data-edit="@Url.Action("Edit","Api",new {Area="Projects" })">
+</div>
+
+@section  scripts{
+    <script src="~/Scripts/Project/index.js"></script>
+    <script>
+        jQuery(document).ready(function () {
+            index.init();
+        });
+    </script>
+}

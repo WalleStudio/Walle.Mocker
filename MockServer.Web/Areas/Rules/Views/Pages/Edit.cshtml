@@ -1,0 +1,174 @@
+﻿@{
+    ViewBag.Title = "编辑规则";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="app" data-projectid="@ViewBag.ProjectId" data-ruleid="@ViewBag.Id">
+    <div class="portlet light col-md-12">
+        <div class="portlet-title">
+            <div class="caption caption-md">
+                <span class="caption-subject theme-font bold">编辑规则</span>
+            </div>
+            <div class="actions">
+                <el-button @@click="retBack" type="text"><i class="fa fa-share"></i><span class="hidden-480"> 返回详情</span></el-button>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <el-form ref="editForm" :model="editForm">
+                        <el-tabs v-model="pageConfig.activeName" @@tab-click="tabChange">
+                            <el-tab-pane label="基本信息" name="base">
+                                <el-form-item label="名称">
+                                    <el-input v-model="editForm.Name" auto-complete="off" placeholder="在此输入规则名称"></el-input>
+                                </el-form-item>
+                                <el-form-item label="描述">
+                                    <el-input type="textarea" :autosize="{ minRows:10, maxRows: 20}" v-model="editForm.Desc" auto-complete="off" placeholder="在此输入规则描述"></el-input>
+                                </el-form-item>
+                            </el-tab-pane>
+                            <el-tab-pane label="匹配设置" name="match">
+                                <el-form-item label="请求地址">
+                                    <el-input placeholder="在此输入http://地址" v-for="(item,$index) in editForm.Urls" v-model="editForm.Urls[$index]">
+                                        <el-button v-if="$index==0" :disabled="!pageConfig.allowAddUrl" slot="append" icon="plus" @@click="addUrl"> </el-button>
+                                        <el-button v-else slot="append" icon="delete" @@click="deleteUrl($index)">  </el-button>
+                                    </el-input>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-col :span="12">
+                                        <el-form-item label="请求方法:">
+                                            <el-select v-model="editForm.RequestMethod" placeholder="请求方式">
+                                                <el-option label="GET" value="GET"></el-option>
+                                                <el-option label="POST" value="POST"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="请求ContentType：">
+                                            <el-select v-model="editForm.RequestContentType" placeholder="Content-Type">
+                                            
+                                                <el-option label="text/plain" value="text/plain">text/plain</el-option>
+                                                <el-option label="application/json" value="application/json">application/json</el-option>
+                                                <el-option label="application/javascript" value="application/javascript">application/javascript</el-option>
+                                                <el-option label="text/html" value="text/html">text/html</el-option>
+                                                <el-option label="text/xml" value="text/xml">text/xml</el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-form-item>
+                                <el-form-item label="请求Body:" v-if="editForm.RequestMethod=='POST'">
+                                    <el-input type="textarea" placeholder="在此输入text/json/xml/form" id="text" :autosize="{ minRows: 10, maxRows: 20}" v-model="editForm.RequestBody"></el-input>
+                                </el-form-item>
+                                <el-form-item label="请求Url表单:" v-else>
+                                    <el-input type="textarea" placeholder="?a=b&c=d" id="text" :autosize="{ minRows: 10, maxRows: 15}" v-model="editForm.RequestBody"></el-input>
+                                </el-form-item>
+                            </el-tab-pane>
+                            <el-tab-pane label="期望设置" name="exp">
+                                <el-form-item label="响应头:">
+                                    <div class="el-input el-input-group el-input-group--append el-input-group--prepend" v-for="(item,$index) in editForm.ResponseHeaders">
+                                        <input type="text" class="form-control el-input__inner" v-model="item.Key" placeholder="name">
+                                        <span class="input-group-addon">=</span>
+                                        <input type="text" class="form-control el-input__inner" v-model="item.Value" placeholder="value">
+                                        <div class="el-input-group__append">
+                                            <el-button v-if="$index==0" :disable="!pageConfig.allowAddresponseheader" type="button" class="el-button el-button--default" @@click="addHeader"><i class="el-icon-plus"></i></el-button>
+                                            <el-button v-else type="button" class="el-button el-button--default" @@click="deleteHeader($index)"><i class="el-icon-delete"></i></el-button>
+                                        </div>
+                                    </div>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-col :span="12">
+                                        <el-form-item label="响应状态码：">
+                                            <el-select v-model="editForm.ResponseStatusCode" placeholder="响应状态码">
+                                                <el-option label="200 OK" value="200"></el-option>
+                                                <el-option label="201 Created" value="201"></el-option>
+                                                <el-option label="202 Accepted" value="202"></el-option>
+                                                <el-option label="400 Bad Request" value="400"></el-option>
+                                                <el-option label="401 Unauthorized" value="401"></el-option>
+                                                <el-option label="402 Payment Required" value="402"></el-option>
+                                                <el-option label="403 Forbidden" value="403"></el-option>
+                                                <el-option label="404 Not Found" value="404"></el-option>
+                                                <el-option label="405 Method Not Allowed" value="405"></el-option>
+                                                <el-option label="406 Not Acceptable" value="406"></el-option>
+                                                <el-option label="407 Proxy Authentication Required" value="407"></el-option>
+                                                <el-option label="408 Request Timeout" value="408"></el-option>
+                                                <el-option label="409 Conflict" value="409"></el-option>
+                                                <el-option label="410 Gone" value="410"></el-option>
+                                                <el-option label="411 Length Required" value="411"></el-option>
+                                                <el-option label="412 Precondition Failed" value="412"></el-option>
+                                                <el-option label="413 Request Entity Too Large" value="413"></el-option>
+                                                <el-option label="414 Request-URI Too Long" value="414"></el-option>
+                                                <el-option label="415 Unsupported Media Type" value="415"></el-option>
+                                                <el-option label="416 Requested Range Not Satisfiable" value="416"></el-option>
+                                                <el-option label="417 Expectation Failed" value="417"></el-option>
+                                                <el-option label="500 Internal Server Error" value="500"></el-option>
+                                                <el-option label="501 Not Implemented" value="501"></el-option>
+                                                <el-option label="502 Bad Gateway" value="502"></el-option>
+                                                <el-option label="503 Service Unavailable" value="503"></el-option>
+                                                <el-option label="504 Gateway Timeout" value="504"></el-option>
+                                                <el-option label="505 HTTP Version Not Supported" value="505"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="响应 ContentType：">
+                                            <el-select v-model="editForm.ResponseContentType" placeholder="Content-Type">
+                                               
+                                                <el-option label="text/plain" value="text/plain">text/plain</el-option>
+                                                <el-option label="application/json" value="application/json">application/json</el-option>
+                                                <el-option label="application/javascript" value="application/javascript">application/javascript</el-option>
+                                                <el-option label="text/html" value="text/html">text/html</el-option>
+                                                <el-option label="text/xml" value="text/xml">text/xml</el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-form-item>
+                                <el-form-item label="响应Body:">
+                                    <div class="btn-group btn-group-devided" data-toggle="buttons">
+                                        <label class="btn btn-transparent grey-salsa btn-circle btn-sm active">
+                                            <input type="radio" name="options" class="toggle" id="option1">Json
+                                        </label>
+                                        <label class="btn btn-transparent grey-salsa btn-circle btn-sm">
+                                            <input type="radio" name="options" class="toggle" id="option2">Xml
+                                        </label>
+                                        <label class="btn btn-transparent grey-salsa btn-circle btn-sm">
+                                            <input type="radio" name="options" class="toggle" id="option2">其他
+                                        </label>
+                                    </div>
+                                    <textarea name="code" class="form-control" rows="20" v-model="editForm.ResponseBody" placeholder="在此输入text/json/xml. 响应内容支持Razer语法,数据来源自请求.">
+                                        
+                                    </textarea>
+                                </el-form-item>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </el-form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="pull-right">
+                    <el-button v-if="pageConfig.activeName!='base'" type="warning" @@click="previous()">返回</el-button>
+                    <el-button v-if="pageConfig.activeName!='exp'" type="warning" @@click="next()">继续</el-button>
+                    <el-button v-if="pageConfig.activeName=='exp'" type="primary" @@click="update()">提交更新</el-button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="urls"
+     data-list="@Url.Action("List","Api",new {Area="Rules" })"
+     data-create="@Url.Action("Create","Api",new {Area="Rules" })"
+     data-update="@Url.Action("Update","Api", new { Area="Rules"})"
+     data-detail="@Url.Action("Detail","Api", new { Area="Rules"})"
+     data-active="@Url.Action("Active","Api", new { Area="Rules"})"
+     data-frozen="@Url.Action("Frozen","Api", new { Area="Rules"})"
+     data-delete="@Url.Action("Delete","Api", new { Area="Rules"})">
+</div>
+
+
+@section scripts {
+    <script src="~/Scripts/Rule/edit.js"></script>
+    <script>
+        jQuery(document).ready(function () {
+            edit.init();
+        });
+    </script>
+}

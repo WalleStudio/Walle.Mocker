@@ -1,0 +1,86 @@
+﻿@{
+    ViewBag.Title = "规则详情";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="app" data-projectid="@ViewBag.ProjectId" data-ruleid="@ViewBag.Id">
+    <div class="portlet light col-md-12">
+        <div class="portlet-title">
+            <div class="caption caption-md">
+                <span class="caption-subject theme-font bold">规则详情</span>
+            </div>
+            <div class="actions">
+                <el-button @@click="backward" type="text"><i class="fa fa-list"></i><span class="hidden-480"> 返回列表</span></el-button>
+                <el-button @@click="editforward" type="text"><i class="fa fa-edit"></i><span class="hidden-480"> 进行编辑</span></el-button>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <el-form ref="editForm" :model="editForm">
+                        <el-form-item label="名称">
+                            <el-label v-text="editForm.Name"></el-label>
+                        </el-form-item>
+                        <el-form-item label="描述">
+                            <pre v-text="editForm.Desc"></pre>
+                        </el-form-item>
+                        <el-tabs v-model="pageConfig.activeName" @@tab-click="tabChange">
+                            <el-tab-pane label="匹配设置" name="match">
+                                <el-form-item label="请求地址:">
+                                    <span class="label label-default" v-text="editForm.RequestMethod">
+                                    </span>
+                                    <el-label v-for="(item,$index) in editForm.Urls" v-text="editForm.Urls[$index]">
+                                    </el-label>
+                                </el-form-item>
+                                <el-form-item label="请求文本:" v-if="editForm.RequestMethod=='POST'">
+                                    <span class="label label-default" v-text="editForm.RequestContentType">
+                                    </span>
+                                    <pre v-text="editForm.RequestBody"></pre>
+                                </el-form-item>
+                                <el-form-item label="请求Url表单:" v-else>
+                                    <span class="label label-default" v-text="editForm.RequestContentType">
+                                    </span>
+                                    <pre v-text="editForm.RequestBody"></pre>
+                                </el-form-item>
+                            </el-tab-pane>
+                            <el-tab-pane label="期望设置" name="exp">
+                                <el-form-item label="响应头:" v-if="editForm.ResponseHeaders.length>0">
+                                    <div class="el-input el-input-group el-input-group--append el-input-group--prepend" v-for="(item,$index) in editForm.ResponseHeaders">
+                                        <input readonly type="text" class="form-control el-input__inner" v-model="item.Key" placeholder="name">
+                                        <span class="input-group-addon">=</span>
+                                        <input readonly type="text" class="form-control el-input__inner" v-model="item.Value" placeholder="value">
+                                    </div>
+                                </el-form-item>
+                                <el-form-item label="响应Body:">
+                                    <span class="label label-default" v-text="editForm.ResponseContentType"></span>
+                                    <span class="label label-default" v-text="editForm.ResponseStatusCode"></span>
+                                    <pre v-text="editForm.ResponseBody"></pre>
+                                </el-form-item>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </el-form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div id="urls"
+     data-list="@Url.Action("List","Api",new {Area="Rules" })"
+     data-create="@Url.Action("Create","Api",new {Area="Rules" })"
+     data-detail="@Url.Action("Detail","Api", new { Area="Rules"})"
+     data-active="@Url.Action("Active","Api", new { Area="Rules"})"
+     data-frozen="@Url.Action("Frozen","Api", new { Area="Rules"})"
+     data-delete="@Url.Action("Delete","Api", new { Area="Rules"})">
+</div>
+
+
+@section scripts {
+    <script src="~/Scripts/Rule/detail.js"></script>
+    <script>
+        jQuery(document).ready(function () {
+            detail.init();
+        });
+    </script>
+}
